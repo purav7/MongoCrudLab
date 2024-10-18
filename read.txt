@@ -1,0 +1,25 @@
+// establishing a connection to mongodb
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Book = require('./models/Book');
+
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(async () => {   // I have used .then here so the this code runs if there was a connection to mongodb
+    console.log('Successfully connected to MongoDB');
+//  used the async so the function getReadBooks() is first created
+    async function getReadBooks() {
+      try {
+        const books = await Book.find();
+        console.log('All books database:', books);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    await getReadBooks(); // after the await function is executed then the await gets executed reading all the books in                       //the database
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });

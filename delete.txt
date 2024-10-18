@@ -1,0 +1,30 @@
+//establishing a connection to mongodb
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Book = require('./models/Book');
+
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(async () => {  // I have used .then here so the this code runs if there was a connection to mongodb
+    console.log('Successfully connected to MongoDB');
+
+    async function deleteBook(title) {// using the async so first the deleteBook function is created
+      try {
+        const result = await Book.deleteOne({ title });  // using the deleteOne function by giving title as an field
+        if (result.deletedCount > 0) {
+          console.log(`Deleted book with title: "${title}".`);
+        } else {
+          console.log(`No book found with the title "${title}".`);
+        }
+      } catch (error) {
+        console.error('Error deleting book:', error);
+      }
+    }
+
+
+    await deleteBook('Harry Potter'); // deleting the book from the database
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });

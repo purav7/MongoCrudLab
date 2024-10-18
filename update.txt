@@ -1,0 +1,30 @@
+//establishing a connection to mongodb
+require('dotenv').config();
+const mongoose = require('mongoose');
+const Book = require('./models/Book');
+
+console.log('MongoDB URI:', process.env.MONGODB_URI);
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(async () => { // I have used .then here so the this code runs if there was a connection to mongodb
+    console.log('Successfully connected to MongoDB');
+
+    async function updateBook(title, newPageCount) {// using the async so first the function updateBook is created
+      try {
+        const result = await Book.updateOne({ title }, { pages: newPageCount });// using updateOne function using the //title to find the book
+        if (result.modifiedCount > 0) {
+          console.log(Updated "${title}" to ${newPageCount} pages.);
+        } else {
+          console.log(No book found with the title "${title}".);
+        }
+      } catch (error) {
+        console.error('Error updating book:', error);
+      }
+    }
+
+ 
+    await updateBook('Harry Potter', 300); // updating the page number
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
